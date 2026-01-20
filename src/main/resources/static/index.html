@@ -2,9 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Love Destiny Generator ❤️</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ff758c, #ff7eb3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            color: #ff4d6d;
+        }
+
+        input {
+            width: 90%;
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #ff4d6d;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #e63e5c;
+        }
+
+        .result {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
 </head>
+
 <body>
+
+<div class="card">
+    <h2>❤️ Love Destiny</h2>
+
+    <input type="text" id="name1" placeholder="Your Name">
+    <input type="text" id="name2" placeholder="Partner Name">
+
+    <button onclick="checkLove()">Check Destiny</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    function checkLove() {
+        let name1 = document.getElementById("name1").value;
+        let name2 = document.getElementById("name2").value;
+
+        if(name1 === "" || name2 === "") {
+            document.getElementById("result").innerHTML =
+                "❌ Please enter both names";
+            return;
+        }
+
+        fetch(`/love?name1=${name1}&name2=${name2}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerHTML = `
+                    <p><strong>${data.couple}</strong></p>
+                    <p>❤️ Love Score: <b>${data.loveScore}%</b></p>
+                    <p>✨ ${data.destinyLine}</p>
+                `;
+            });
+    }
+</script>
 
 </body>
 </html>
