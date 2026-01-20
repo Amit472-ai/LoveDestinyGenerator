@@ -5,55 +5,133 @@
     <title>Love Destiny Generator ❤️</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #ff758c, #ff7eb3);
+            margin: 0;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at top, #ffb3c6, transparent 60%),
+                linear-gradient(135deg, #ff5f9e, #845ec2);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            overflow: hidden;
         }
 
         .card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            width: 320px;
+            width: 900px;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 45px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.35);
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: pop 0.6s ease;
         }
 
-        h2 {
-            color: #ff4d6d;
+        @keyframes pop {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        h1 {
+            color: #ff3d81;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        .characters {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 180px;
+            margin: 30px 0;
+            transition: all 1s ease;
+        }
+
+        .characters img {
+            width: 160px;
+            transition: transform 1s ease;
+        }
+
+        .close #boy {
+            transform: translateX(90px);
+        }
+
+        .close #girl {
+            transform: translateX(-90px);
+        }
+
+        .inputs {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 20px;
         }
 
         input {
-            width: 90%;
-            padding: 8px;
-            margin: 8px 0;
-            border-radius: 6px;
+            width: 40%;
+            padding: 14px;
+            border-radius: 12px;
             border: 1px solid #ccc;
+            font-size: 15px;
         }
 
         button {
-            background: #ff4d6d;
-            color: white;
+            margin-top: 28px;
+            padding: 14px 45px;
             border: none;
-            padding: 10px;
-            width: 100%;
-            border-radius: 6px;
-            cursor: pointer;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #ff3d81, #ff7eb3);
+            color: white;
             font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
 
         button:hover {
-            background: #e63e5c;
+            transform: scale(1.06);
+        }
+
+        .section {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px dashed #ffd1dc;
         }
 
         .result {
-            margin-top: 15px;
-            font-size: 14px;
+            font-size: 18px;
             color: #333;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Floating hearts */
+        .heart {
+            position: absolute;
+            bottom: -20px;
+            font-size: 18px;
+            color: rgba(255,255,255,0.7);
+            animation: floatUp 6s infinite ease-in;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(-120vh); opacity: 0; }
         }
     </style>
 </head>
@@ -61,37 +139,78 @@
 <body>
 
 <div class="card">
-    <h2>❤️ Love Destiny</h2>
+    <h1>💖 Love Destiny Generator</h1>
+    <p class="subtitle">Discover your connection ✨</p>
 
-    <input type="text" id="name1" placeholder="Your Name">
-    <input type="text" id="name2" placeholder="Partner Name">
+    <div class="characters" id="characters">
+        <img id="boy" src="images/boy.png">
+        <img id="girl" src="images/girl.png">
+        <img id="hug" src="images/hug.png" style="display:none;">
+    </div>
+
+    <div class="inputs">
+        <input id="name1" placeholder="Your Name">
+        <input id="name2" placeholder="Partner Name">
+    </div>
 
     <button onclick="checkLove()">Check Destiny</button>
 
-    <div class="result" id="result"></div>
+    <div class="section result" id="result"></div>
 </div>
 
 <script>
     function checkLove() {
-        let name1 = document.getElementById("name1").value;
-        let name2 = document.getElementById("name2").value;
+        const name1 = document.getElementById("name1").value;
+        const name2 = document.getElementById("name2").value;
 
-        if(name1 === "" || name2 === "") {
-            document.getElementById("result").innerHTML =
-                "❌ Please enter both names";
+        const result = document.getElementById("result");
+        const characters = document.getElementById("characters");
+
+        const boy = document.getElementById("boy");
+        const girl = document.getElementById("girl");
+        const hug = document.getElementById("hug");
+
+        if (!name1 || !name2) {
+            result.innerHTML = "❌ Please enter both names";
+            result.style.opacity = 1;
             return;
         }
 
         fetch(`/love?name1=${name1}&name2=${name2}`)
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
-                document.getElementById("result").innerHTML = `
-                    <p><strong>${data.couple}</strong></p>
+
+                result.innerHTML = `
+                    <p><b>${data.couple}</b></p>
                     <p>❤️ Love Score: <b>${data.loveScore}%</b></p>
-                    <p>✨ ${data.destinyLine}</p>
+                    <p>${data.destinyLine}</p>
                 `;
+
+                // reset
+                characters.className = "characters";
+                boy.style.display = "block";
+                girl.style.display = "block";
+                hug.style.display = "none";
+
+                if (data.loveScore >= 80) {
+                    boy.style.display = "none";
+                    girl.style.display = "none";
+                    hug.style.display = "block";
+                } else if (data.loveScore >= 50) {
+                    characters.classList.add("close");
+                }
             });
     }
+
+    // floating hearts
+    setInterval(() => {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerText = "❤️";
+        heart.style.left = Math.random() * 100 + "vw";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 6000);
+    }, 800);
 </script>
 
 </body>
